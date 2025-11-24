@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>간단 메모 모달</title>
+    <style>
+        /* (기존 CSS 코드 유지) */
+        body {
+            /* 전체 배경을 밝게 설정 */
+            background-color: #f4f4f9;
+            display: flex;
+            /* 정렬 방향을 세로로 변경 */
+            flex-direction: column; 
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            font-family: 'Arial', sans-serif;
+        }
+
+        /* 팝업 버튼 스타일 */
+        .open-button {
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            background-color: #ffb6c1; 
+            color: white;
+            border: none;
+            border-radius: 5px;
+            box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.1);
+            /* 버튼과 주의사항 텍스트 간의 간격 */
+            margin-bottom: 10px; 
+        }
+        
+        /* 주의사항 텍스트 스타일 추가 */
+        .warning-text {
+            font-size: 0.8em;
+            color: #333333; /* 빨간색으로 경고 강조 */
+            margin-top: 5px;
+            font-weight: bold;
+        }
+
+        /* 모달 배경 스타일: 메모장이 떴을 때 배경을 어둡게 만듭니다. */
+        .modal-backdrop {
+            position: fixed; /* 화면 전체를 덮음 */
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5); /* 50% 투명도의 검은색 */
+            z-index: 10;
+            display: none; /* 초기에는 숨김 */
+        }
+
+        /* 메모장 컨테이너 스타일 */
+        .memo-container {
+            /* 메모지 스타일 */
+            width: 300px;
+            padding: 20px;
+            background-color: #fffacd; 
+            border: 1px solid #e0e0e0;
+            border-radius: 5px;
+            box-shadow: 3px 3px 10px rgba(0, 0, 0, 0.3); /* 모달 효과를 위해 그림자 진하게 */
+
+            /* 팝업 구현을 위한 추가 스타일 */
+            position: fixed; /* 뷰포트에 고정 */
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%); /* 화면 정중앙에 배치 */
+            z-index: 20; /* 배경보다 위에 놓이도록 */
+            display: none; /* 초기에는 숨김 */
+        }
+        
+        .memo-header {
+            border-bottom: 2px dashed #ffb6c1; 
+            padding-bottom: 10px;
+            margin-bottom: 15px;
+        }
+
+        .memo-header h2 {
+            margin: 0 0 5px 0;
+            color: #333;
+            font-size: 1.2em;
+        }
+
+        .memo-header p {
+            margin: 0;
+            font-size: 0.8em;
+            color: #777;
+        }
+
+        .memo-content p {
+            line-height: 1.6;
+            color: #444;
+        }
+
+        /* 닫기 버튼 스타일 조정 */
+        .close-button {
+            float: right; 
+            margin-top: 10px; 
+            background: none; 
+            border: none; 
+            cursor: pointer; 
+            color: #555;
+            font-size: 1em;
+            padding: 5px;
+        }
+    </style>
+</head>
+<body>
+    <button class="open-button" onclick="openMemo()">젠젠이 안녕🐱<br>클릭해봐! </button>
+    
+    <p class="warning-text">※ 열리지 않으면 Chrome/Safari로 열어줘!</p>
+
+    <div id="backdrop" class="modal-backdrop" onclick="closeMemo()"></div>
+
+    <div id="memo" class="memo-container">
+        <div class="memo-header">
+            <h2>젠젠이 메모장</h2>
+            <p>강수만을 위한 전용 메모장</p>
+            <p>날짜: 2025. 11. 24</p>
+        </div>
+        <div class="memo-content">
+            <p>
+                강수야 안녕~ 새벽에 깨지않고 잘 잤어?ㅎㅎ<br>
+                날씨는 어떠니~오늘 미닛뮤트 가는데 날이 맑았으면 좋겠다. 
+                일찍 가서 구경도하고 또 조용한 카페에서 사색도 즐겨봐요<br>
+                항상 완벽한 답을 찾는 것만 의미가 있는건 아닐수도 있으니까~~<br>
+                내가 보는 강수는 항상.. 딱 부러지는걸 좋아하는거같아서...ㅎㅎ
+                가끔은 다르게 살아보는것도 괜찮다구~~<br>
+                나도 여기와서 하루뿐이였지만 생각을 참 많이 해본거같아<br>
+                사색의 끝은 결국 강수이지만..<br>
+                참 덕분에 많이 웃었고 즐거웠던거같아<br>
+                누군가를 이렇게 웃게 만드는건 참 어려운 일인데 
+                강수는 참 대단한 힘을 가진것 같아ㅎㅎ<br>
+                나는 항상 행복하게 해주겠다 말만 하고.. 내용은 없었는데ㅎㅎㅎ<br>
+                그래도.. 첫번째 노력.. 젠젠이메모장..어때?ㅋㅋ<br>
+                메모치고 말이 길어져서.. 아직 할말은 많지만 다음에 이어서..ㅎㅎ<br>
+                결론: 오늘도 좋은 하루 보내자!언제나 화이팅🩷<br>
+              p.s. 부산에 꼭 갈거야. 잊지못할 하루 만들거야<br>
+            </p>
+        </div>
+        <button class="close-button" onclick="closeMemo()">[닫기]</button>
+    </div>
+
+    <script>
+        // 💡 1. 정답 비밀번호 설정 (여기에 원하는 비밀번호를 입력하세요)
+        const correctPassword = "부산"; 
+
+        function openMemo() {
+            // 💡 2. 사용자에게 비밀번호를 입력받는 팝업 창 띄우기
+            const userInput = prompt("젠젠이 메모장을 열려면 비밀번호를 입력해주세요.");
+
+            // prompt() 창에서 '취소'를 누르거나 빈 값을 입력하면 null 또는 빈 문자열이 반환됨
+            if (userInput === null || userInput === "") {
+                alert("비밀번호 입력이 취소되었거나 입력되지 않았습니다.");
+                return; // 함수 실행을 종료하고 메모장을 열지 않음
+            }
+
+            // 💡 3. 입력된 값과 정답을 비교
+            if (userInput === correctPassword) {
+                // 비밀번호가 일치하면 메모장과 배경을 보이게 함
+                document.getElementById('backdrop').style.display = 'block';
+                document.getElementById('memo').style.display = 'block';
+            } else {
+                // 비밀번호가 일치하지 않으면 경고 메시지를 표시
+                alert("비밀번호가 틀렸습니다. 다시 시도해주세요.");
+            }
+        }
+
+        function closeMemo() {
+            // 메모장과 배경을 모두 숨김
+            document.getElementById('backdrop').style.display = 'none';
+            document.getElementById('memo').style.display = 'none';
+        }
+    </script>
+</body>
+</html>
